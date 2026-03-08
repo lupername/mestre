@@ -835,7 +835,7 @@ function startNewChat(){
   document.getElementById('headerTitle').textContent='Nova conversa';
   document.getElementById('chat').innerHTML='';
   showTyping();
-  fetch('https://script.google.com/macros/s/AKfycbw-lHqBMT5USUauWzeSsGukWl3JPBOLuRg54Lck7ZGTrLxU70FK5ekCSvvGiIsvHLQy/exec',{
+  fetch('https://script.google.com/macros/s/AKfycbwvBVPSyGppk8ExXR08I8LHUujUwdAPXcqU5fsXIFg0CiOjkku4Z4E7XzPkOuASu_u87A/exec',{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:[{role:'user',parts:[{text:'Olá!'}]}]})
   })
@@ -916,7 +916,7 @@ async function sendMessage(){
   showTyping();
   try{
     const history=currentConvId&&conversations[currentConvId]?conversations[currentConvId].history.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})):[{role:'user',parts:[{text:text}]}];
-    const res=await fetch('https://script.google.com/macros/s/AKfycbw-lHqBMT5USUauWzeSsGukWl3JPBOLuRg54Lck7ZGTrLxU70FK5ekCSvvGiIsvHLQy/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:history})});
+    const res=await fetch('https://script.google.com/macros/s/AKfycbwvBVPSyGppk8ExXR08I8LHUujUwdAPXcqU5fsXIFg0CiOjkku4Z4E7XzPkOuASu_u87A/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:history})});
     const data=await res.json();
     removeTyping();
     const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Desculpe, não consegui processar.';
