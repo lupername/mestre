@@ -835,14 +835,14 @@ function startNewChat(){
   document.getElementById('headerTitle').textContent='Nova conversa';
   document.getElementById('chat').innerHTML='';
   showTyping();
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch('https://script.google.com/macros/s/AKfycbx5RDERTZe73t8FkYScqmdS3FT3brgkBwxIhSip8CvOId-c44ioYdKiFCqscqHQKwkS/exec',{
     method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:SYSTEM_PROMPT,messages:[{role:'user',content:'Olá!'}]})
+    body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:[{role:'user',parts:[{text:'Olá!'}]}]})
   })
   .then(r=>r.json())
   .then(data=>{
     removeTyping();
-    const reply=data.content?.map(b=>b.text||'').join('')||'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!';
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!';
     const id=genId();
     conversations[id]={id,title:'Nova conversa',history:[{role:'user',content:'Olá!'},{role:'assistant',content:reply}],createdAt:Date.now()};
     currentConvId=id; saveConvs(); renderSidebar();
@@ -915,11 +915,11 @@ async function sendMessage(){
   }
   showTyping();
   try{
-    const history=currentConvId&&conversations[currentConvId]?conversations[currentConvId].history.slice(-20):[{role:'user',content:text}];
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM_PROMPT,messages:history})});
+    const history=currentConvId&&conversations[currentConvId]?conversations[currentConvId].history.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})):[{role:'user',parts:[{text:text}]}];
+    const res=await fetch('https://script.google.com/macros/s/AKfycbx5RDERTZe73t8FkYScqmdS3FT3brgkBwxIhSip8CvOId-c44ioYdKiFCqscqHQKwkS/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:history})});
     const data=await res.json();
     removeTyping();
-    const reply=data.content?.map(b=>b.text||'').join('')||'Desculpe, não consegui processar.';
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Desculpe, não consegui processar.';
 
     // track correct/error from reply
     if(reply.includes('[ACERTO]')){ stats.correct++; saveStats(); }
