@@ -837,7 +837,7 @@ function startNewChat(){
   showTyping();
   fetch('https://young-moon-7779.jowsenetu.workers.dev/',{
     method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:[{role:'user',parts:[{text:'Olá!'}]}]})
+    body:JSON.stringify({contents:[{role:'user',parts:[{text:SYSTEM_PROMPT+'\n\nOlá!'}]}]})
   })
   .then(r=>r.json())
   .then(data=>{
@@ -915,8 +915,8 @@ async function sendMessage(){
   }
   showTyping();
   try{
-    const history=currentConvId&&conversations[currentConvId]?conversations[currentConvId].history.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})):[{role:'user',parts:[{text:text}]}];
-    const res=await fetch('https://young-moon-7779.jowsenetu.workers.dev/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM_PROMPT}]},contents:history})});
+    const history=currentConvId&&conversations[currentConvId]?conversations[currentConvId].history.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})):[{role:'user',parts:[{text:SYSTEM_PROMPT+'\n\n'+text}]}];
+    const res=await fetch('https://young-moon-7779.jowsenetu.workers.dev/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:history})});
     const data=await res.json();
     removeTyping();
     const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Desculpe, não consegui processar.';
