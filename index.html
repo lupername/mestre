@@ -842,8 +842,9 @@ function startNewChat(){
   .then(r=>r.json())
   .then(data=>{
     removeTyping();
-    const geminiText2 = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.candidates?.[0]?.content?.parts?.[0] || '';
-    const reply=String(geminiText2||data?.error||JSON.stringify(data)||'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!');
+    const part2 = data?.candidates?.[0]?.content?.parts?.[0];
+    const geminiText2 = (typeof part2 === 'string' ? part2 : part2?.text) || '';
+    const reply = geminiText2 || (typeof data?.error === 'string' ? data.error : '') || 'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!';
     const id=genId();
     conversations[id]={id,title:'Nova conversa',history:[{role:'user',content:'Olá!'},{role:'assistant',content:reply}],createdAt:Date.now()};
     currentConvId=id; saveConvs(); renderSidebar();
@@ -920,8 +921,9 @@ async function sendMessage(){
     const res=await fetch('https://young-moon-7779.jowsenetu.workers.dev/',{method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:history})});
     const data=await res.json();
     removeTyping();
-    const geminiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.candidates?.[0]?.content?.parts?.[0] || '';
-    const reply=String(geminiText||data?.error||JSON.stringify(data)||'Desculpe, não consegui processar.');
+    const part = data?.candidates?.[0]?.content?.parts?.[0];
+    const geminiText = (typeof part === 'string' ? part : part?.text) || '';
+    const reply = geminiText || (typeof data?.error === 'string' ? data.error : '') || 'Desculpe, não consegui processar.';
 
     // track correct/error from reply
     if(reply.includes('[ACERTO]')){ stats.correct++; saveStats(); }
