@@ -850,8 +850,9 @@ function startNewChat(){
     // count new SP
     stats.sps++; updateStreak(); saveStats();
   })
-  .catch(()=>{ removeTyping(); appendMsg('assistant','Olá, sou o **Mestre das tutorias**! Envie-me suas QAs da tutoria e vamos estudar! 🩺'); });
-}
+  .catch(err){
+    removeTyping(); appendMsg('assistant','⚠️ Erro: ' + err.message);
+  }
 
 // ════════ CHAT ════════
 function formatText(t){
