@@ -842,7 +842,7 @@ function startNewChat(){
   .then(r=>r.json())
   .then(data=>{
     removeTyping();
-    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!';
+    const reply=(data.candidates?.[0]?.content?.parts?.[0]?.text || data.error || JSON.stringify(data).slice(0,200) || 'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!');
     const id=genId();
     conversations[id]={id,title:'Nova conversa',history:[{role:'user',content:'Olá!'},{role:'assistant',content:reply}],createdAt:Date.now()};
     currentConvId=id; saveConvs(); renderSidebar();
@@ -919,7 +919,7 @@ async function sendMessage(){
     const res=await fetch('https://young-moon-7779.jowsenetu.workers.dev/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:history})});
     const data=await res.json();
     removeTyping();
-    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Desculpe, não consegui processar.';
+    const reply=(data.candidates?.[0]?.content?.parts?.[0]?.text || data.error || JSON.stringify(data).slice(0,200) || 'Desculpe, não consegui processar.');
 
     // track correct/error from reply
     if(reply.includes('[ACERTO]')){ stats.correct++; saveStats(); }
