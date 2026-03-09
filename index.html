@@ -842,7 +842,7 @@ function startNewChat(){
   .then(r=>r.json())
   .then(data=>{
     removeTyping();
-    const reply=(data.candidates?.[0]?.content?.parts?.[0]?.text||data.error||JSON.stringify(data).slice(0,300)||'Olá, sou o Mestre das tutorias!');
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||data.error||JSON.stringify(data).slice(0,200)||'Olá, sou o Mestre das tutorias! Envie-me suas QAs da tutoria e vamos estudar!';
     const id=genId();
     conversations[id]={id,title:'Nova conversa',history:[{role:'user',content:'Olá!'},{role:'assistant',content:reply}],createdAt:Date.now()};
     currentConvId=id; saveConvs(); renderSidebar();
@@ -850,9 +850,8 @@ function startNewChat(){
     // count new SP
     stats.sps++; updateStreak(); saveStats();
   })
-  .catch(err){
-    removeTyping(); appendMsg('assistant','⚠️ Erro: ' + err.message);
-  }
+  .catch(()=>{ removeTyping(); appendMsg('assistant','Olá, sou o **Mestre das tutorias**! Envie-me suas QAs da tutoria e vamos estudar! 🩺'); });
+}
 
 // ════════ CHAT ════════
 function formatText(t){
@@ -920,7 +919,7 @@ async function sendMessage(){
     const res=await fetch('https://young-moon-7779.jowsenetu.workers.dev/',{method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:history})});
     const data=await res.json();
     removeTyping();
-    const reply=(data.candidates?.[0]?.content?.parts?.[0]?.text||data.error||JSON.stringify(data).slice(0,300)||'Desculpe, não consegui processar.');
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||data.error||JSON.stringify(data).slice(0,200)||'Desculpe, não consegui processar.';
 
     // track correct/error from reply
     if(reply.includes('[ACERTO]')){ stats.correct++; saveStats(); }
@@ -939,8 +938,8 @@ async function sendMessage(){
         setTimeout(()=>document.getElementById('blockedScreen').classList.add('open'),800);
       }
     }
-  }catch{
-    removeTyping(); appendMsg('assistant','⚠️ Erro ao conectar. Verifique sua conexão e tente novamente.');
+  }catch(err){
+    removeTyping(); appendMsg('assistant','⚠️ Erro: '+err.message);
   }
   isLoading=false; sendBtn.disabled=false;
   document.getElementById('userInput').focus();
